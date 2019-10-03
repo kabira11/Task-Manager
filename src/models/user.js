@@ -2,6 +2,7 @@ const mongoose = require('mongoose')
 const validator = require('validator')
 const bcrypt = require('bcryptjs')
 const jwt = require('jsonwebtoken')
+const Task = require('./task')
 
 //validate is middleware are function which are passed control during execution of async function
 const userSchema = new mongoose.Schema({
@@ -47,7 +48,12 @@ const userSchema = new mongoose.Schema({
             type: String,
             required: true
         }
-    }]
+    }],
+    avatar: {
+        type: Buffer
+    }
+},{
+    timestamps : true
 })
 
 
@@ -126,6 +132,7 @@ userSchema.methods.toJSON = function() {
     //removing password and tokens
     delete userObject.password
     delete userObject.tokens
+    delete userObject.avatar
 
     return userObject
 }
@@ -201,6 +208,15 @@ userSchema.pre('save', async function (next) {
 
 console.log("just before saving")
 console.log(user)
+
+    next()
+})
+
+//Delete user tasks when user is removed
+userSchema.pre('remove' , async function (next) {
+    const user = this
+
+   await Task.deleteMany({owner: user._id})
 
     next()
 })

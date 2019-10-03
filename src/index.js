@@ -6,7 +6,43 @@ const taskRouter = require('./routers/task')
 const app = express()
 const port=process.env.PORT || 3005
 
-//
+
+//how can we upload a file in express
+//filesize in bytes below 1mb limit provided
+const multer = require('multer')
+const upload = multer({
+    dest: 'images',
+    limits: {
+        fileSize: 1000000
+    },
+    fileFilter(req, file, cb) {
+        //using regex for either a doc file or docx
+        if(!file.originalname.match(/\.(doc|docx)$/)) {
+            return cb(new Error("Please upload a Word Document"))
+        }
+
+        cb(undefined,true)
+
+
+        // cb(new Error("File must be PDF"))
+        // cb(undefined,true)
+        // cb(undefined,false)
+    }
+})
+
+const errorMiddleware = (req, res, next) => {
+    throw new Error ('From my middle ware')
+}
+
+//upload.single is middleware
+app.post('/upload',upload.single('upload'),(req,res) => {
+    res.send()
+},(error , req, res, next) => {
+    res.status(400).send({error: error.message})
+
+})
+
+
 // Without middleware: new request -> run route handler
 //
 // with middleware: new request -> do something -> run route handler
@@ -20,7 +56,6 @@ root handler actually running. */
 //     //this is for forwarding code to router
 //     next()
 // })
-
 
 //Automatically parse json to js object
 app.use(express.json())
