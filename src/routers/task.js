@@ -35,13 +35,43 @@ router.post('/tasks' ,auth, async (req, res) => {
 
 
 //show task whoever is created
+//GET /tasks?completed=true
+//GET /tasks?limit=10&skip=10
+//GET /tasks?sortBy=createdAt:desc
 router.get('/tasks' , auth , async (req , res) => {
-
+    const match = {}
+    const sort = {}
+//req.query.completed for taking url data completed
+console.log(req.query.completed)
+    if (req.query.completed) {
+        match.completed = req.query.completed === 'true' 
+    }
+    if (req.query.sortBy) {
+       const parts = req.query.sortBy.split(':')
+        sort[parts[0]] = parts[1] === 'desc' ? -1 : 1
+        console.log(parts)
+        console.log(sort)
+    }
 //using async await
     try {
         // const task = await Task.find({owner: req.user._id})
         //this line works exact the same as above line
-        await req.user.populate('tasks').execPopulate()
+        //provide match  option  for filter data
+        //options for limit for pagination and skip for skipping dat amout of value
+        await req.user.populate({
+            path: 'tasks',
+            match,
+            options: {
+                limit: parseInt(req.query.limit),
+                skip: parseInt(req.query.skip),
+                // sort: {
+                //     //ascending 1
+                //     //descending -1
+                //     createdAt: -1
+                // }
+                sort
+            }
+        }).execPopulate()
         res.status(201).send(req.user.tasks)
     }catch (err) {
         res.status(400).send(err)
