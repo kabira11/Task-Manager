@@ -2,9 +2,11 @@ const express = require('express')
 require('./db/mongoose')
 const userRouter = require('./routers/user')
 const taskRouter = require('./routers/task')
+const candidate = require('./routers/candidate')
 
 const app = express()
-const port=process.env.PORT || 3005
+//process.env.PORT  came from config/dev.env which cmd set in package.json
+const port=process.env.PORT 
 
 
 //how can we upload a file in express
@@ -62,6 +64,7 @@ app.use(express.json())
 //register userRouter and taskRouter router to our existing app
 app.use(userRouter)
 app.use(taskRouter)
+app.use(candidate)
 
 // const router = new express.Router()
 
@@ -99,7 +102,7 @@ const myFunction1 = async () => {
 
     //creating token
     //expiresIn set expire of web token
-    const token = jwt.sign({_id: 'abcd123'} ,'thisismynewcourse' ,{expiresIn: '7 days'})
+    const token = jwt.sign({_id: 'abcd123'} ,process.env.JWT_SECRET ,{expiresIn: '7 days'})
     console.log("token")
     console.log(token)
     //first part of token.This is a base64 encoded Jason string.And this is known as the header.
