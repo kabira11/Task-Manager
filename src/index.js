@@ -2,7 +2,7 @@ const express = require('express')
 require('./db/mongoose')
 const userRouter = require('./routers/user')
 const taskRouter = require('./routers/task')
-const candidate = require('./routers/candidate')
+// const candidate = require('./routers/candidate')
 
 const app = express()
 //process.env.PORT  came from config/dev.env which cmd set in package.json
@@ -64,7 +64,7 @@ app.use(express.json())
 //register userRouter and taskRouter router to our existing app
 app.use(userRouter)
 app.use(taskRouter)
-app.use(candidate)
+// app.use(candidate)
 
 // const router = new express.Router()
 
